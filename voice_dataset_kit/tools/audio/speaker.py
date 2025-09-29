@@ -4,7 +4,7 @@ import numpy as np
 import librosa
 try:
     import torch
-    from speechbrain.pretrained import EncoderClassifier
+    from speechbrain.inference import EncoderClassifier
 except Exception:
     torch = None
 

@@ -34,7 +34,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["podcast_pipeline", "voice-dataset-kit"]
+packages = ["podcast_pipeline", "voice_dataset_kit"]
 
 
 

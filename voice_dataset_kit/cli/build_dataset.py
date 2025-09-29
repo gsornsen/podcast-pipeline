@@ -1,4 +1,6 @@
 from __future__ import annotations
+# Import the patch module first to fix torchaudio deprecation warning
+import voice_dataset_kit  # This applies the monkey-patch that fixes torchaudio warning
 from pathlib import Path
 import argparse, json
 from tqdm import tqdm
