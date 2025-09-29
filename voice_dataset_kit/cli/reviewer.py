@@ -88,7 +88,14 @@ def launch(out_root: Path):
         return send_from_directory(full.parent, full.name)
     app.run(host='127.0.0.1', port=7860, debug=False)
 
-if __name__=='__main__':
+def main():
+    """Main entry point for the dataset reviewer CLI."""
     import argparse
-    ap = argparse.ArgumentParser(); ap.add_argument('--out_dir', required=True)
-    args = ap.parse_args(); launch(Path(args.out_dir))
+    ap = argparse.ArgumentParser()
+    ap.add_argument('--out_dir', required=True, help='Output directory containing dataset to review')
+    args = ap.parse_args()
+    launch(Path(args.out_dir))
+
+
+if __name__ == '__main__':
+    main()
