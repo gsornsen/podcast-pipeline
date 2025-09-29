@@ -50,7 +50,7 @@ temporal server start-dev --ui-port 8080 --db-filename temporal.db
 
 # 3. Verify servers are running
 redis-cli ping                 # Should return "PONG"
-curl http://localhost:8080     # Temporal UI should respond
+curl http://localhost:8233     # Temporal UI should respond (may be different port)
 
 # 4. Check MCP server status in Claude Code
 # The following servers should be available:
@@ -97,13 +97,13 @@ The system uses a hierarchical approach with meta-orchestration agents coordinat
 
 **Basic Pattern:**
 
-```
+```shell
 @multi-agent-coordinator: Please coordinate [task description] using appropriate specialist agents.
 ```
 
 **Examples:**
 
-```
+```shell
 @multi-agent-coordinator: Please coordinate the implementation of LoRA training pipeline for Sesame CSM-1B using appropriate ML specialists.
 
 @workflow-orchestrator: Design and execute a workflow for processing audio data through voice-dataset-kit and preparing for model training.

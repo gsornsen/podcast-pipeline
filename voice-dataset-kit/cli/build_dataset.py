@@ -2,10 +2,10 @@ from __future__ import annotations
 from pathlib import Path
 import argparse, json
 from tqdm import tqdm
-from tools.audio.segment import segment_file
-from tools.audio.speaker import SpeakerFilter
-from tools.util.io import ensure_dir, write_wav_int16, save_jsonl
-from tools.util.splits import assign_splits_by_group
+from ..tools.audio.segment import segment_file
+from ..tools.audio.speaker import SpeakerFilter
+from ..tools.util.io import ensure_dir, write_wav_int16, save_jsonl
+from ..tools.util.splits import assign_splits_by_group
 
 def main():
     ap = argparse.ArgumentParser(description='Build 5–15s dataset with QC, hum-notch, speaker filter, subtitles')
@@ -58,7 +58,7 @@ def main():
             fname = f"{base}_{i:04d}.wav" if split=='train' else (f"{base}_v_{i:04d}.wav" if split=='val' else f"{base}_t_{i:04d}.wav")
             y, sr = wav_cache[[p for p in wav_cache if Path(p).name==it['source']][0]]
             s = int(it['start_sec']*sr); e = int(it['end_sec']*sr)
-            from tools.audio.qc import trim_with_margin
+            from ..tools.audio.qc import trim_with_margin
             clip = trim_with_margin(y[s:e], sr, margin_ms=args.margin_ms)
             out_wav = sdir / fname
             write_wav_int16(out_wav, clip, sr)
