@@ -1,7 +1,6 @@
 """Mock MCP responses for CI/CD testing without live services."""
 
-from typing import Any, Dict, List, Optional
-from unittest.mock import AsyncMock
+from typing import Any
 
 
 class MockRedisMCP:
@@ -9,16 +8,16 @@ class MockRedisMCP:
 
     def __init__(self) -> None:
         """Initialize mock Redis state."""
-        self.data: Dict[str, Any] = {}
-        self.hashes: Dict[str, Dict[str, Any]] = {}
-        self.pub_sub_messages: Dict[str, List[str]] = {}
+        self.data: dict[str, Any] = {}
+        self.hashes: dict[str, dict[str, Any]] = {}
+        self.pub_sub_messages: dict[str, list[str]] = {}
 
     async def set(
         self,
         key: str,
         value: Any,
-        expiration: Optional[int] = None,
-    ) -> Dict[str, Any]:
+        expiration: int | None = None,
+    ) -> dict[str, Any]:
         """Mock Redis SET operation.
 
         Args:
@@ -32,7 +31,7 @@ class MockRedisMCP:
         self.data[key] = value
         return {"status": "success", "message": f"Key '{key}' set successfully"}
 
-    async def get(self, key: str) -> Dict[str, Any]:
+    async def get(self, key: str) -> dict[str, Any]:
         """Mock Redis GET operation.
 
         Args:
@@ -50,8 +49,8 @@ class MockRedisMCP:
         name: str,
         key: str,
         value: Any,
-        expire_seconds: Optional[int] = None,
-    ) -> Dict[str, Any]:
+        expire_seconds: int | None = None,
+    ) -> dict[str, Any]:
         """Mock Redis HSET operation.
 
         Args:
@@ -68,7 +67,7 @@ class MockRedisMCP:
         self.hashes[name][key] = value
         return {"status": "success", "message": f"Hash '{name}' field '{key}' set"}
 
-    async def hgetall(self, name: str) -> Dict[str, Any]:
+    async def hgetall(self, name: str) -> dict[str, Any]:
         """Mock Redis HGETALL operation.
 
         Args:
@@ -81,7 +80,7 @@ class MockRedisMCP:
             return {"fields": self.hashes[name]}
         return {"error": f"Hash '{name}' not found"}
 
-    async def publish(self, channel: str, message: str) -> Dict[str, Any]:
+    async def publish(self, channel: str, message: str) -> dict[str, Any]:
         """Mock Redis PUBLISH operation.
 
         Args:
@@ -96,7 +95,7 @@ class MockRedisMCP:
         self.pub_sub_messages[channel].append(message)
         return {"subscribers": len(self.pub_sub_messages[channel])}
 
-    async def subscribe(self, channel: str) -> Dict[str, Any]:
+    async def subscribe(self, channel: str) -> dict[str, Any]:
         """Mock Redis SUBSCRIBE operation.
 
         Args:
@@ -109,7 +108,7 @@ class MockRedisMCP:
             self.pub_sub_messages[channel] = []
         return {"status": "success", "message": f"Subscribed to '{channel}'"}
 
-    async def delete(self, key: str) -> Dict[str, Any]:
+    async def delete(self, key: str) -> dict[str, Any]:
         """Mock Redis DELETE operation.
 
         Args:
@@ -123,7 +122,7 @@ class MockRedisMCP:
             return {"status": "success", "message": f"Key '{key}' deleted"}
         return {"status": "success", "message": f"Key '{key}' did not exist"}
 
-    async def hget(self, name: str, key: str) -> Dict[str, Any]:
+    async def hget(self, name: str, key: str) -> dict[str, Any]:
         """Mock Redis HGET operation.
 
         Args:
@@ -141,8 +140,8 @@ class MockRedisMCP:
         self,
         name: str,
         value: Any,
-        expire: Optional[int] = None,
-    ) -> Dict[str, Any]:
+        expire: int | None = None,
+    ) -> dict[str, Any]:
         """Mock Redis LPUSH operation.
 
         Args:
@@ -153,15 +152,13 @@ class MockRedisMCP:
         Returns:
             List length
         """
-        if name not in self.data:
-            self.data[name] = []
-        elif not isinstance(self.data[name], list):
+        if name not in self.data or not isinstance(self.data[name], list):
             self.data[name] = []
 
         self.data[name].insert(0, value)
         return {"status": "success", "length": len(self.data[name])}
 
-    async def llen(self, name: str) -> Dict[str, Any]:
+    async def llen(self, name: str) -> dict[str, Any]:
         """Mock Redis LLEN operation.
 
         Args:
@@ -179,8 +176,8 @@ class MockRedisMCP:
         name: str,
         path: str,
         value: Any,
-        expire_seconds: Optional[int] = None,
-    ) -> Dict[str, Any]:
+        expire_seconds: int | None = None,
+    ) -> dict[str, Any]:
         """Mock Redis JSON.SET operation.
 
         Args:
@@ -208,7 +205,7 @@ class MockRedisMCP:
         self,
         name: str,
         path: str = "$",
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Mock Redis JSON.GET operation.
 
         Args:
@@ -232,13 +229,13 @@ class MockTemporalMCP:
 
     def __init__(self) -> None:
         """Initialize mock Temporal state."""
-        self.workflows: Dict[str, Dict[str, Any]] = {}
+        self.workflows: dict[str, dict[str, Any]] = {}
 
     async def get_workflow_history(
         self,
         workflow_id: str,
-        run_id: Optional[str] = None,
-    ) -> Dict[str, Any]:
+        run_id: str | None = None,
+    ) -> dict[str, Any]:
         """Mock GetWorkflowHistory operation.
 
         Args:
@@ -281,16 +278,16 @@ class MockTaskQueueMCP:
 
     def __init__(self) -> None:
         """Initialize mock TaskQueue state."""
-        self.projects: Dict[str, Dict[str, Any]] = {}
+        self.projects: dict[str, dict[str, Any]] = {}
         self.next_project_id = 1
         self.next_task_id = 1
 
     async def create_project(
         self,
         initial_prompt: str,
-        tasks: List[Dict[str, str]],
+        tasks: list[dict[str, str]],
         auto_approve: bool = False,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Mock create_project operation.
 
         Args:
@@ -338,7 +335,7 @@ class MockTaskQueueMCP:
             "message": "Project created successfully"
         }
 
-    async def list_projects(self, state: str = "open") -> Dict[str, Any]:
+    async def list_projects(self, state: str = "open") -> dict[str, Any]:
         """Mock list_projects operation.
 
         Args:
@@ -351,11 +348,7 @@ class MockTaskQueueMCP:
         for project_id, project in self.projects.items():
             # Simple state filter logic
             has_incomplete = any(t["status"] != "done" for t in project["tasks"])
-            if state == "open" and has_incomplete:
-                projects.append(project)
-            elif state == "completed" and not has_incomplete:
-                projects.append(project)
-            elif state == "all":
+            if (state == "open" and has_incomplete) or (state == "completed" and not has_incomplete) or state == "all":
                 projects.append(project)
 
         return {"status": "success", "projects": projects}
@@ -363,8 +356,8 @@ class MockTaskQueueMCP:
     async def add_tasks_to_project(
         self,
         project_id: str,
-        tasks: List[Dict[str, str]],
-    ) -> Dict[str, Any]:
+        tasks: list[dict[str, str]],
+    ) -> dict[str, Any]:
         """Mock add_tasks_to_project operation.
 
         Args:
@@ -394,8 +387,8 @@ class MockTaskQueueMCP:
         project_id: str,
         task_id: str,
         status: str,
-        completed_details: Optional[str] = None,
-    ) -> Dict[str, Any]:
+        completed_details: str | None = None,
+    ) -> dict[str, Any]:
         """Mock update_task operation.
 
         Args:
@@ -420,7 +413,7 @@ class MockTaskQueueMCP:
 
         return {"error": f"Task '{task_id}' not found"}
 
-    async def get_next_task(self, project_id: str) -> Dict[str, Any]:
+    async def get_next_task(self, project_id: str) -> dict[str, Any]:
         """Mock get_next_task operation.
 
         Args:
@@ -439,7 +432,7 @@ class MockTaskQueueMCP:
 
         return {"task": None, "message": "No tasks pending"}
 
-    async def read_project(self, project_id: str) -> Dict[str, Any]:
+    async def read_project(self, project_id: str) -> dict[str, Any]:
         """Mock read_project operation.
 
         Args:

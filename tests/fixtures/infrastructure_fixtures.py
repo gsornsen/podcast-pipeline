@@ -1,7 +1,8 @@
 """Pytest fixtures for infrastructure testing."""
 
-from typing import Any, Generator
-from unittest.mock import AsyncMock, MagicMock, patch
+from collections.abc import Generator
+from typing import Any
+from unittest.mock import patch
 
 import pytest
 
@@ -9,7 +10,7 @@ from tests.fixtures.mocks import MockRedisMCP, MockTaskQueueMCP, MockTemporalMCP
 
 
 @pytest.fixture
-def mock_redis_mcp(monkeypatch: pytest.MonkeyPatch) -> Generator[MockRedisMCP, None, None]:
+def mock_redis_mcp(monkeypatch: pytest.MonkeyPatch) -> Generator[MockRedisMCP]:
     """Mock RedisMCPServer responses for CI.
 
     This fixture patches Redis MCP tool calls to return mock responses,
@@ -46,7 +47,7 @@ def mock_redis_mcp(monkeypatch: pytest.MonkeyPatch) -> Generator[MockRedisMCP, N
 
 
 @pytest.fixture
-def mock_temporal_mcp(monkeypatch: pytest.MonkeyPatch) -> Generator[MockTemporalMCP, None, None]:
+def mock_temporal_mcp(monkeypatch: pytest.MonkeyPatch) -> Generator[MockTemporalMCP]:
     """Mock temporal-mcp responses for CI.
 
     This fixture patches Temporal MCP tool calls to return mock responses,
@@ -81,7 +82,7 @@ def mock_temporal_mcp(monkeypatch: pytest.MonkeyPatch) -> Generator[MockTemporal
 
 
 @pytest.fixture
-def mock_taskqueue_mcp(monkeypatch: pytest.MonkeyPatch) -> Generator[MockTaskQueueMCP, None, None]:
+def mock_taskqueue_mcp(monkeypatch: pytest.MonkeyPatch) -> Generator[MockTaskQueueMCP]:
     """Mock taskqueue MCP responses for CI.
 
     This fixture patches TaskQueue MCP tool calls to return mock responses,

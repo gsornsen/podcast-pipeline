@@ -181,7 +181,7 @@ async def test_using_helper_fixtures(
     assert result.get("value") == "production"
 
     print(f"✅ Test session: {test_session_id}")
-    print(f"✅ Sample data loaded and verified")
+    print("✅ Sample data loaded and verified")
 
 
 @pytest.mark.asyncio

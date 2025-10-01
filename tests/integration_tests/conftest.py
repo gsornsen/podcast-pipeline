@@ -7,8 +7,8 @@ Set environment variable USE_MOCK_MCP=1 to enable mock mode.
 """
 
 import os
+
 import pytest
-from typing import AsyncGenerator
 
 # Import the MCP client abstraction
 from infrastructure.mcp_client import (
@@ -17,14 +17,6 @@ from infrastructure.mcp_client import (
 )
 
 # Import helper fixtures (makes them available to all tests in this directory)
-from tests.fixtures.mcp_fixtures import (
-    sample_redis_data,
-    sample_project_tasks,
-    sample_workflow_data,
-    populated_redis_client,
-    test_project,
-    test_session_id,
-)
 
 # Check if we should use mocks (CI/CD mode)
 USE_MOCK_MCP = os.environ.get("USE_MOCK_MCP", "0") == "1"

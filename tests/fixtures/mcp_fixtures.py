@@ -4,8 +4,9 @@ This module provides additional helper fixtures beyond the core mcp_client fixtu
 in conftest.py. These are convenience fixtures for common test scenarios.
 """
 
-import pytest
 from typing import Any
+
+import pytest
 
 
 @pytest.fixture

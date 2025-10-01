@@ -17,13 +17,13 @@ Run with: uv run pytest tests/integration_tests/test_integration_pipeline.py -v
 Mock mode: USE_MOCK_MCP=1 uv run pytest tests/integration_tests/test_integration_pipeline.py -v
 """
 
-import asyncio
 import json
 import time
 import uuid
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass
 from datetime import datetime
-from typing import Dict, Any, List, Optional
+from typing import Any
+
 import pytest
 import pytest_asyncio
 
@@ -35,8 +35,8 @@ class _TestResult:
     status: str  # "PASS", "FAIL", "SKIP"
     duration_ms: float
     details: str
-    error: Optional[str] = None
-    metrics: Optional[Dict[str, Any]] = None
+    error: str | None = None
+    metrics: dict[str, Any] | None = None
 
 
 @dataclass
@@ -44,7 +44,7 @@ class _SystemStatus:
     """Overall system health status"""
     redis_status: str
     temporal_status: str
-    mcp_servers: Dict[str, str]
+    mcp_servers: dict[str, str]
     overall_health: str
     timestamp: str
 
@@ -266,7 +266,7 @@ class TestRealIntegrationPipeline:
             print(f"Redis health check failed: {e}")
             return False
 
-    async def check_temporal_health(self, mcp_client) -> bool:
+    async def check_temporal_health(self, mcp_client) -> bool | None:
         """Check Temporal server health with MCP client."""
         try:
             # Use MCP client health check - try to get workflow history for a test workflow
@@ -286,7 +286,7 @@ class TestRealIntegrationPipeline:
             print(f"Temporal health check failed: {e}")
             return False
 
-    async def check_mcp_servers(self, mcp_client) -> Dict[str, str]:
+    async def check_mcp_servers(self, mcp_client) -> dict[str, str]:
         """Check all MCP server availability with client."""
         results = {}
 
@@ -337,7 +337,7 @@ class TestRealIntegrationPipeline:
 
         return results
 
-    async def _test_redis_mcp_operations(self, mcp_client) -> Dict[str, int]:
+    async def _test_redis_mcp_operations(self, mcp_client) -> dict[str, int]:
         """Test Redis MCP server operations."""
         tested, successful = 0, 0
 
@@ -378,7 +378,7 @@ class TestRealIntegrationPipeline:
 
         return {"tested": tested, "successful": successful}
 
-    async def _test_taskqueue_mcp_operations(self, mcp_client) -> Dict[str, int]:
+    async def _test_taskqueue_mcp_operations(self, mcp_client) -> dict[str, int]:
         """Test TaskQueue MCP server operations."""
         tested, successful = 0, 0
 
@@ -412,7 +412,7 @@ class TestRealIntegrationPipeline:
 
         return {"tested": tested, "successful": successful}
 
-    async def _test_temporal_mcp_operations(self, mcp_client) -> Dict[str, int]:
+    async def _test_temporal_mcp_operations(self, mcp_client) -> dict[str, int]:
         """Test Temporal MCP server operations."""
         tested, successful = 0, 0
 
@@ -425,7 +425,7 @@ class TestRealIntegrationPipeline:
                 # Success if we get a valid response
                 if result.get("status") == "success" or "not found" in str(result.get("error", "")).lower():
                     successful += 1
-                    print(f"✅ Temporal GetWorkflowHistory successful")
+                    print("✅ Temporal GetWorkflowHistory successful")
                 else:
                     print(f"❌ Temporal GetWorkflowHistory failed: {result}")
 
@@ -434,7 +434,7 @@ class TestRealIntegrationPipeline:
 
         return {"tested": tested, "successful": successful}
 
-    async def _test_redis_key_operations(self, mcp_client) -> Dict[str, int]:
+    async def _test_redis_key_operations(self, mcp_client) -> dict[str, int]:
         """Test Redis key operations."""
         tested, successful = 0, 0
 
@@ -476,7 +476,7 @@ class TestRealIntegrationPipeline:
 
         return {"tested": tested, "successful": successful}
 
-    async def _test_redis_hash_operations(self, mcp_client) -> Dict[str, int]:
+    async def _test_redis_hash_operations(self, mcp_client) -> dict[str, int]:
         """Test Redis hash operations."""
         tested, successful = 0, 0
 
@@ -508,7 +508,7 @@ class TestRealIntegrationPipeline:
 
         return {"tested": tested, "successful": successful}
 
-    async def _test_redis_list_operations(self, mcp_client) -> Dict[str, int]:
+    async def _test_redis_list_operations(self, mcp_client) -> dict[str, int]:
         """Test Redis list operations."""
         tested, successful = 0, 0
 
@@ -540,7 +540,7 @@ class TestRealIntegrationPipeline:
 
         return {"tested": tested, "successful": successful}
 
-    async def create_test_project(self, mcp_client) -> Dict[str, Any]:
+    async def create_test_project(self, mcp_client) -> dict[str, Any]:
         """Create test project in task queue."""
         try:
             result = await mcp_client.taskqueue_create_project(
@@ -574,7 +574,7 @@ class TestRealIntegrationPipeline:
                 "details": "Project creation failed - TaskQueue MCP may not be available"
             }
 
-    async def add_test_tasks(self, mcp_client) -> Dict[str, Any]:
+    async def add_test_tasks(self, mcp_client) -> dict[str, Any]:
         """Add test tasks to project."""
         try:
             # Create project first to get project ID
@@ -623,7 +623,7 @@ class TestRealIntegrationPipeline:
                 "total_tasks": 4,
             }
 
-    async def _test_task_retrieval(self, mcp_client) -> Dict[str, int]:
+    async def _test_task_retrieval(self, mcp_client) -> dict[str, int]:
         """Test task retrieval operations."""
         tested, successful = 0, 0
 
@@ -639,7 +639,7 @@ class TestRealIntegrationPipeline:
 
                 if isinstance(result, dict) and result.get("status") == "success":
                     successful += 1
-                    print(f"✅ TaskQueue read_project successful")
+                    print("✅ TaskQueue read_project successful")
                 else:
                     print(f"❌ TaskQueue read_project failed: {result}")
             else:
@@ -661,7 +661,7 @@ class TestRealIntegrationPipeline:
 
         return {"tested": tested, "successful": successful}
 
-    async def get_workflow_history(self, mcp_client) -> Dict[str, Any]:
+    async def get_workflow_history(self, mcp_client) -> dict[str, Any] | None:
         """Get workflow history with MCP client."""
         try:
             result = await mcp_client.temporal_get_workflow_history(
@@ -699,7 +699,7 @@ class TestRealIntegrationPipeline:
                 "details": "Workflow history retrieval failed - Temporal workflow service may not be running"
             }
 
-    async def setup_agent_coordination(self, mcp_client) -> Dict[str, Any]:
+    async def setup_agent_coordination(self, mcp_client) -> dict[str, Any]:
         """Setup agent coordination using Redis for state management."""
         try:
             coordination_key = f"agent_coordination:{self.test_session_id}"
@@ -731,6 +731,7 @@ class TestRealIntegrationPipeline:
                     "details": f"Coordination established for {len(agents)} agents via Redis storage",
                     "active_agents": agents,
                     "coordination_channels": 3,
+                    "metadata_result": metadata_result,
                 }
             else:
                 return {
@@ -738,6 +739,7 @@ class TestRealIntegrationPipeline:
                     "error": str(result),
                     "active_agents": [],
                     "coordination_channels": 0,
+                    "metadata_result": "N/A",
                 }
         except Exception as e:
             return {
@@ -745,9 +747,10 @@ class TestRealIntegrationPipeline:
                 "error": str(e),
                 "active_agents": [],
                 "coordination_channels": 0,
+                "metadata_result": "N/A",
             }
 
-    async def create_collaborative_task(self, mcp_client) -> Dict[str, Any]:
+    async def create_collaborative_task(self, mcp_client) -> dict[str, Any]:
         """Create collaborative task using storage."""
         try:
             task_id = f"prepare_training_data_collab_{self.test_session_id}"
@@ -787,7 +790,7 @@ class TestRealIntegrationPipeline:
                 "task_id": None,
             }
 
-    async def distribute_subtasks(self, mcp_client) -> Dict[str, Any]:
+    async def distribute_subtasks(self, mcp_client) -> dict[str, Any]:
         """Distribute subtasks to agents using queuing."""
         try:
             subtasks = [
@@ -827,7 +830,7 @@ class TestRealIntegrationPipeline:
                 "total_subtasks": 5,
             }
 
-    async def monitor_collaborative_progress(self, mcp_client) -> Dict[str, Any]:
+    async def monitor_collaborative_progress(self, mcp_client) -> dict[str, Any]:
         """Monitor collaborative progress using state tracking."""
         try:
             progress_key = f"collaboration_progress:{self.test_session_id}"
@@ -882,7 +885,7 @@ class TestRealIntegrationPipeline:
                 "final_progress": 0,
             }
 
-    async def _test_task_handoff_protocol(self, mcp_client) -> Dict[str, Any]:
+    async def _test_task_handoff_protocol(self, mcp_client) -> dict[str, Any]:
         """Test task handoff protocol with infrastructure."""
         try:
             # Create test project first
@@ -960,7 +963,7 @@ class TestRealIntegrationPipeline:
                 "details": "Task handoff protocol test failed with exception"
             }
 
-    async def _test_event_driven_coordination(self, mcp_client) -> Dict[str, Any]:
+    async def _test_event_driven_coordination(self, mcp_client) -> dict[str, Any]:
         """Test event-driven coordination with Redis pub/sub."""
         events_tested = 0
         events_published = 0
@@ -1033,7 +1036,7 @@ class TestRealIntegrationPipeline:
                 "details": "Event-driven coordination test failed"
             }
 
-    async def _test_workflow_agent_integration(self, mcp_client) -> Dict[str, Any]:
+    async def _test_workflow_agent_integration(self, mcp_client) -> dict[str, Any]:
         """Test workflow-agent integration with Temporal."""
         try:
             # Test workflow history retrieval (following workflow-agent-integration.md)
@@ -1079,7 +1082,7 @@ class TestRealIntegrationPipeline:
                 "details": "Workflow-agent integration test failed with exception"
             }
 
-    async def _test_workflow_status_command(self, mcp_client) -> Dict[str, Any]:
+    async def _test_workflow_status_command(self, mcp_client) -> dict[str, Any]:
         """Test /workflow-status command equivalent with infrastructure."""
         try:
             # Simulate /workflow-status command by checking Temporal workflow
@@ -1130,7 +1133,7 @@ class TestRealIntegrationPipeline:
                 "details": "/workflow-status equivalent test failed"
             }
 
-    async def _test_agent_status_command(self, mcp_client) -> Dict[str, Any]:
+    async def _test_agent_status_command(self, mcp_client) -> dict[str, Any]:
         """Test /agent-status command equivalent with infrastructure."""
         try:
             # Simulate /agent-status by tracking agent availability in Redis
@@ -1185,7 +1188,7 @@ class TestRealIntegrationPipeline:
                 "details": "/agent-status equivalent test failed"
             }
 
-    async def _test_check_infrastructure_command(self, mcp_client) -> Dict[str, Any]:
+    async def _test_check_infrastructure_command(self, mcp_client) -> dict[str, Any]:
         """Test /check-infrastructure command equivalent with infrastructure."""
         try:
             components = {

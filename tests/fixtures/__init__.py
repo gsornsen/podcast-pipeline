@@ -12,10 +12,10 @@ from tests.fixtures.mocks import (
 )
 
 __all__ = [
-    "mock_redis_mcp",
-    "mock_taskqueue_mcp",
-    "mock_temporal_mcp",
     "MockRedisMCP",
     "MockTaskQueueMCP",
     "MockTemporalMCP",
+    "mock_redis_mcp",
+    "mock_taskqueue_mcp",
+    "mock_temporal_mcp",
 ]
