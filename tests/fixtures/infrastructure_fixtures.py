@@ -35,12 +35,12 @@ def mock_redis_mcp(monkeypatch: pytest.MonkeyPatch) -> Generator[MockRedisMCP, N
     # Patch MCP tool calls to use mock
     # TODO: Replace with actual MCP tool patch paths once wrappers are implemented
     with (
-        patch("podcast_pipeline.infrastructure.mcp_wrappers.RedisWrapper.set", new=mock.set),
-        patch("podcast_pipeline.infrastructure.mcp_wrappers.RedisWrapper.get", new=mock.get),
-        patch("podcast_pipeline.infrastructure.mcp_wrappers.RedisWrapper.hset", new=mock.hset),
-        patch("podcast_pipeline.infrastructure.mcp_wrappers.RedisWrapper.hgetall", new=mock.hgetall),
-        patch("podcast_pipeline.infrastructure.mcp_wrappers.RedisWrapper.publish", new=mock.publish),
-        patch("podcast_pipeline.infrastructure.mcp_wrappers.RedisWrapper.subscribe", new=mock.subscribe),
+        patch("infrastructure.mcp_wrappers.RedisWrapper.set", new=mock.set),
+        patch("infrastructure.mcp_wrappers.RedisWrapper.get", new=mock.get),
+        patch("infrastructure.mcp_wrappers.RedisWrapper.hset", new=mock.hset),
+        patch("infrastructure.mcp_wrappers.RedisWrapper.hgetall", new=mock.hgetall),
+        patch("infrastructure.mcp_wrappers.RedisWrapper.publish", new=mock.publish),
+        patch("infrastructure.mcp_wrappers.RedisWrapper.subscribe", new=mock.subscribe),
     ):
         yield mock
 
@@ -74,7 +74,7 @@ def mock_temporal_mcp(monkeypatch: pytest.MonkeyPatch) -> Generator[MockTemporal
     # Patch MCP tool calls to use mock
     # TODO: Replace with actual MCP tool patch paths once wrappers are implemented
     with patch(
-        "podcast_pipeline.infrastructure.mcp_wrappers.TemporalWrapper.get_workflow_history",
+        "infrastructure.mcp_wrappers.TemporalWrapper.get_workflow_history",
         new=mock.get_workflow_history,
     ):
         yield mock
@@ -110,23 +110,23 @@ def mock_taskqueue_mcp(monkeypatch: pytest.MonkeyPatch) -> Generator[MockTaskQue
     # TODO: Replace with actual MCP tool patch paths once wrappers are implemented
     with (
         patch(
-            "podcast_pipeline.infrastructure.mcp_wrappers.TaskQueueWrapper.create_project",
+            "infrastructure.mcp_wrappers.TaskQueueWrapper.create_project",
             new=mock.create_project,
         ),
         patch(
-            "podcast_pipeline.infrastructure.mcp_wrappers.TaskQueueWrapper.list_projects",
+            "infrastructure.mcp_wrappers.TaskQueueWrapper.list_projects",
             new=mock.list_projects,
         ),
         patch(
-            "podcast_pipeline.infrastructure.mcp_wrappers.TaskQueueWrapper.add_tasks",
+            "infrastructure.mcp_wrappers.TaskQueueWrapper.add_tasks",
             new=mock.add_tasks_to_project,
         ),
         patch(
-            "podcast_pipeline.infrastructure.mcp_wrappers.TaskQueueWrapper.update_task",
+            "infrastructure.mcp_wrappers.TaskQueueWrapper.update_task",
             new=mock.update_task,
         ),
         patch(
-            "podcast_pipeline.infrastructure.mcp_wrappers.TaskQueueWrapper.get_next_task",
+            "infrastructure.mcp_wrappers.TaskQueueWrapper.get_next_task",
             new=mock.get_next_task,
         ),
     ):
@@ -190,6 +190,6 @@ def mock_gpu_available(monkeypatch: pytest.MonkeyPatch) -> None:
         return True
 
     monkeypatch.setattr(
-        "podcast_pipeline.infrastructure.health_checks.check_gpu_health",
+        "infrastructure.health_checks.check_gpu_health",
         mock_check_gpu,
     )

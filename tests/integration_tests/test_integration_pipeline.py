@@ -13,8 +13,8 @@ The tests use the MCPClient abstraction layer, enabling both:
 - Real MCP server testing (default)
 - Mock mode testing (USE_MOCK_MCP=1 for CI/CD)
 
-Run with: pytest tests/integration_tests/test_integration_pipeline.py -v
-Mock mode: USE_MOCK_MCP=1 pytest tests/integration_tests/test_integration_pipeline.py -v
+Run with: uv run pytest tests/integration_tests/test_integration_pipeline.py -v
+Mock mode: USE_MOCK_MCP=1 uv run pytest tests/integration_tests/test_integration_pipeline.py -v
 """
 
 import asyncio

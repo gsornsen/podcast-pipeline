@@ -11,7 +11,7 @@ import pytest
 from typing import AsyncGenerator
 
 # Import the MCP client abstraction
-from podcast_pipeline.infrastructure.mcp_client import (
+from infrastructure.mcp_client import (
     MCPClient,
     create_mcp_client,
 )
