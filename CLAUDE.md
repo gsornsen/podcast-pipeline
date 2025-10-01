@@ -390,3 +390,4 @@ After each milestone:
 ---
 
 *This document is maintained by the knowledge-synthesizer and updated after each milestone completion. Last updated: Ready for M1 audio curation phase.*
+- always use uv run python to run python commands/scripts
